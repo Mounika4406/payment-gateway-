@@ -1,12 +1,9 @@
 import express from "express";
 import { pool } from "../db/pool.js";
-import { createOrder, getOrder } from "../controllers/order.controller.js";
 
 const router = express.Router();
 
-/* =========================
-   PUBLIC ORDER (NO AUTH)
-========================= */
+/* PUBLIC ORDER FETCH (NO AUTH) */
 router.get("/api/v1/orders/:orderId/public", async (req, res) => {
   const { orderId } = req.params;
 
@@ -28,11 +25,5 @@ router.get("/api/v1/orders/:orderId/public", async (req, res) => {
 
   res.json(rows[0]);
 });
-
-/* =========================
-   MERCHANT (AUTH REQUIRED)
-========================= */
-router.post("/api/v1/orders", createOrder);
-router.get("/api/v1/orders/:orderId", getOrder);
 
 export default router;

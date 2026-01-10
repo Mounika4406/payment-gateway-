@@ -6,8 +6,7 @@ import {
 
 const router = express.Router();
 
-// ✅ paths relative to /checkout
-router.get("/orders/:orderId", getCheckoutOrder);
-router.post("/payments", createCheckoutPayment);
+router.get("/checkout/orders/:orderId", getCheckoutOrder);
+router.post("/checkout/payments", createCheckoutPayment);
 
 export default router;
