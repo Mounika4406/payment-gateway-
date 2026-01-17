@@ -1,55 +1,13 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Payment Checkout</title>
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>checkout-page</title>
   </head>
   <body>
-    <h1>Checkout Page</h1>
-
-    <button id="payBtn">Pay ₹500</button>
-
-    <pre id="output"></pre>
-
-    <script>
-      const API = "http://localhost:8000/api/v1";
-
-      document.getElementById("payBtn").addEventListener("click", async () => {
-        const out = document.getElementById("output");
-        out.textContent = "Creating order...";
-
-        const headers = {
-          "X-Api-Key": "key_test_abc123",
-          "X-Api-Secret": "secret_test_xyz789",
-          "Content-Type": "application/json"
-        };
-
-        // 1) Create order
-        const orderRes = await fetch(`${API}/orders`, {
-          method: "POST",
-          headers,
-          body: JSON.stringify({ amount: 50000 })
-        });
-
-        const order = await orderRes.json();
-        out.textContent = "Order created:\n" + JSON.stringify(order, null, 2);
-
-        // 2) Create payment
-        out.textContent += "\n\nCreating payment...";
-        const payRes = await fetch(`${API}/payments`, {
-          method: "POST",
-          headers,
-          body: JSON.stringify({
-            order_id: order.id,
-            method: "upi",
-            vpa: "user@paytm"
-          })
-        });
-
-        const payment = await payRes.json();
-        out.textContent += "\n\nPayment created:\n" + JSON.stringify(payment, null, 2);
-        out.textContent += "\n\nNow background worker will process it + webhook will fire.";
-      });
-    </script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

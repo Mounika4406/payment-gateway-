@@ -16,18 +16,6 @@ services:
       test: ["CMD-SHELL", "pg_isready -U gateway_user -d payment_gateway"]
       interval: 10s
       timeout: 5s
-      retries: 10
-      start_period: 30s
-
-  redis:
-    image: redis:7-alpine
-    container_name: redis_gateway
-    ports:
-      - "6379:6379"
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 3s
       retries: 5
 
   api:
@@ -38,57 +26,10 @@ services:
       - "8000:8000"
     environment:
       DATABASE_URL: postgresql://gateway_user:gateway_pass@postgres:5432/payment_gateway
-      REDIS_URL: redis://redis:6379
       PORT: 8000
       TEST_MODE: "false"
     depends_on:
       postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-
-  worker:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.worker
-    container_name: gateway_worker
-    environment:
-      DATABASE_URL: postgresql://gateway_user:gateway_pass@postgres:5432/payment_gateway
-      REDIS_URL: redis://redis:6379
-      TEST_MODE: "false"
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-
-  webhook-worker:
-    build:
-      context: ./backend
-    container_name: gateway_webhook_worker
-    command: sh -c "sleep 5 && node src/webhook.worker.js"
-    environment:
-      DATABASE_URL: postgresql://gateway_user:gateway_pass@postgres:5432/payment_gateway
-      REDIS_URL: redis://redis:6379
-      WEBHOOK_RETRY_INTERVALS_TEST: "true"
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-
-  refund-worker:
-    build:
-      context: ./backend
-    container_name: gateway_refund_worker
-    command: sh -c "sleep 5 && node src/refund.worker.js"
-    environment:
-      DATABASE_URL: postgresql://gateway_user:gateway_pass@postgres:5432/payment_gateway
-      REDIS_URL: redis://redis:6379
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
         condition: service_healthy
 
   dashboard:
