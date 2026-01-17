@@ -4,16 +4,20 @@ import {
   getPayment,
   listPayments
 } from "../controllers/payment.controller.js";
+import { createRefund } from "../controllers/payment.controller.js";
+import { authMiddleware } from "../middleware/auth.middleware.js";
+
 
 const router = express.Router();
 
-// LIST PAYMENTS (FOR DASHBOARD & TRANSACTIONS)
-router.get("/api/v1/payments", listPayments);
-
-// CREATE PAYMENT
 router.post("/api/v1/payments", createPayment);
-
-// GET PAYMENT BY ID
 router.get("/api/v1/payments/:paymentId", getPayment);
+router.get("/api/v1/payments", listPayments);
+router.post(
+  "/api/v1/payments/:paymentId/refunds",
+  authMiddleware,
+  createRefund
+);
+
 
 export default router;

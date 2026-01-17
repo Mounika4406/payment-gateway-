@@ -1,79 +1,68 @@
-# Payment Gateway System
+# Payment Gateway (Async Workers + Webhooks + Refunds)
 
-This project is a simplified payment gateway application that allows
-merchants to create orders, customers to complete payments via a checkout
-page, and merchants to track transactions in a dashboard.
+## Services
+- API (Express + Postgres)
+- Redis (BullMQ queues)
+- Payment Worker
+- Webhook Worker (with retry + signature)
+- Refund Worker
+- Dashboard (static placeholder)
+- Checkout Page (simple HTML)
 
----
-
-## Features
-
-- Merchant authentication using API Key and Secret
-- Order creation API
-- Public checkout page using order ID
-- UPI and Card payment methods
-- Asynchronous payment processing
-- Merchant dashboard with analytics
-- Transactions listing page
-- Dockerized setup
-
----
-
-## Tech Stack
-
-- Backend: Node.js, Express
-- Frontend: React + Vite
-- Database: PostgreSQL
-- Containerization: Docker, Docker Compose
-
----
-
-## How to Run the Project
-
+## Run locally (Docker)
 ```bash
 docker-compose up -d --build
-Services
-API Server: http://localhost:8000
+API auth headers
+All protected endpoints require:
 
-Checkout Page: http://localhost:3001
+X-Api-Key: key_test_abc123
 
-Merchant Dashboard: http://localhost:3000
+X-Api-Secret: secret_test_xyz789
 
-Payment Flow
-Merchant creates an order using API credentials
-
-Checkout page is opened using order_id
-
-User selects UPI or Card and completes payment
-
-Payment is processed asynchronously
-
-Merchant views transactions in the dashboard
-
-Sample URLs
-Checkout:
-
-ruby
-Copy code
-http://localhost:3001/?order_id=ORDER_ID
-Dashboard:
-
+Endpoints
+Create Order
 bash
 Copy code
-http://localhost:3000/dashboard
-Screenshots
-Checkout – UPI
+curl -X POST http://localhost:8000/api/v1/orders \
+  -H "X-Api-Key: key_test_abc123" \
+  -H "X-Api-Secret: secret_test_xyz789" \
+  -H "Content-Type: application/json" \
+  -d '{"amount":50000}'
+Create Payment
+bash
+Copy code
+curl -X POST http://localhost:8000/api/v1/payments \
+  -H "X-Api-Key: key_test_abc123" \
+  -H "X-Api-Secret: secret_test_xyz789" \
+  -H "Content-Type: application/json" \
+  -d '{"order_id":"<order_id>","method":"upi","vpa":"user@paytm"}'
+List webhook logs
+bash
+Copy code
+curl "http://localhost:8000/api/v1/webhooks?limit=10&offset=0" \
+  -H "X-Api-Key: key_test_abc123" \
+  -H "X-Api-Secret: secret_test_xyz789"
+Retry webhook
+bash
+Copy code
+curl -X POST "http://localhost:8000/api/v1/webhooks/<webhookId>/retry" \
+  -H "X-Api-Key: key_test_abc123" \
+  -H "X-Api-Secret: secret_test_xyz789"
+Create refund
+bash
+Copy code
+curl -X POST http://localhost:8000/api/v1/payments/<paymentId>/refunds \
+  -H "X-Api-Key: key_test_abc123" \
+  -H "X-Api-Secret: secret_test_xyz789" \
+  -H "Content-Type: application/json" \
+  -d '{"amount":10000,"reason":"partial refund"}'
+Get refund
+bash
+Copy code
+curl http://localhost:8000/api/v1/refunds/<refundId> \
+  -H "X-Api-Key: key_test_abc123" \
+  -H "X-Api-Secret: secret_test_xyz789"
+Frontend
+Dashboard: http://localhost:3000
 
-Checkout – Card
-
-Payment Success
-
-Merchant Login
-
-Merchant Dashboard
-
-Transactions
-
-Note:
-The merchant dashboard UI is demonstrated via screenshots.
-The Docker container serves a placeholder page as per assignment setup.
+Checkout Page: http://localhost:3001

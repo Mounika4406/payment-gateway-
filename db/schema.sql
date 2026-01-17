@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS merchants (
   api_key VARCHAR(64) NOT NULL UNIQUE,
   api_secret VARCHAR(64) NOT NULL,
   webhook_url TEXT,
+  webhook_secret VARCHAR(64) NOT NULL,
   is_active BOOLEAN DEFAULT true,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -75,6 +76,8 @@ INSERT INTO merchants (
   email,
   api_key,
   api_secret,
+  webhook_url,
+  webhook_secret,
   created_at,
   updated_at
 )
@@ -84,6 +87,8 @@ VALUES (
   'test@example.com',
   'key_test_abc123',
   'secret_test_xyz789',
+  'http://192.168.55.104:4000/webhook',
+  'whsec_test_abc123',
   CURRENT_TIMESTAMP,
   CURRENT_TIMESTAMP
 )
